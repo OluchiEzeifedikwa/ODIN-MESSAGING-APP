@@ -17,40 +17,38 @@ datasource db {
 model User {
   id             String   @id @default(cuid())
   password       String
-  name           String?
+  username       String   @default("anonymous") @unique
   createdAt      DateTime @default(now())
   sentMessages   Message[] @relation("MessageSender")
   receivedMessages Message[] @relation("MessageRecipient")
-  profile         Profile?
+  
 }
 
 
 model Message {
   id        String   @id @default(cuid())
-  sender    User     @relation("MessageSender", fields: [senderId], references: [id])
-  senderId  String
-  recipient User     @relation("MessageRecipient", fields: [recipientId], references: [id])
-  recipientId  String  
+  sender    User     @relation("MessageSender", fields: [senderUsername], references: [username])
+  senderUsername  String
+  recipient User     @relation("MessageRecipient", fields: [recipientUsername], references: [username])
+  recipientUsername  String  
   messages     String 
   createdAt DateTime @default(now())
 }
 
-model Picture {
-  id        String   @id @default(cuid())
-  url       String
-  type      String
-  profile   Profile?
-  profileId String   @unique
-  createdAt DateTime @default(now())
-}
 
 model Profile {
   id        String   @id @default(cuid())
-  name      String
-  username  String?
-  picture   Picture? @relation(fields: [pictureId], references: [id])
-  pictureId String   @unique
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  profilename  String  @unique
+  pictures     Picture[]
+  
+}
+
+model Picture {
+  id        String   @id @default(cuid())
+  picturename       String
+  fileSize  Int       @default(0)
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  profileId String   @default("some-default-profile-id")
   createdAt DateTime @default(now())
 }
+

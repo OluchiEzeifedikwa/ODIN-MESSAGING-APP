@@ -1,0 +1,8 @@
+<li>
+    <h2><%= picture.picturename%></h2>
+    <p>Picture Size: <%= picture.picturesize %> bytes</p>
+    <p>Upload Time: <%= picture.createdAt %></p>
+    <button>
+       <a href="/pictures/<%= (picture.id) %>/download">Download Picture</a>
+    </button>
+ </li>

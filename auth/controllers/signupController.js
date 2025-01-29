@@ -8,7 +8,7 @@ async function signup(req, res) {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await prisma.user.create({
       data: {
-        name: req.body.name,
+        username: req.body.username,
         password: hashedPassword,
       },
     });

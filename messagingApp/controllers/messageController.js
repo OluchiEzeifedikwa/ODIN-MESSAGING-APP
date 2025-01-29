@@ -1,31 +1,69 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// exports.createMessage = async (req, res) => {
+// try {
+// const senderId = req.body.senderId;
+// const recipientId = req.body.recipientId;
+
+// const user = await prisma.user.findUnique({ where: {username: 'Bosun'}});
+// const recipient = await prisma.message.findUnique({ where: { id: recipientId } });
+
+
+
+// if (!sender || !recipient) {
+//   res.status(400).json({ message: 'Invalid senderId or recipientId' });
+//   return;
+// }
+
+// const message = await prisma.message.create({
+//   data: {
+//     messages: req.body.messages,
+//     senderId: senderId,
+//     recipientId: recipientId,
+//   },
+// });
+
+// res.json(message);
+// } catch (err) {
+// res.status(500).json({ message: err.message });
+// }
+// };
+
+
 exports.createMessage = async (req, res) => {
-try {
-const senderId = req.body.senderId;
-const recipientId = req.body.recipientId;
+  try {
+    const senderUsername = req.body.senderUsername;
+    const recipientUsername = req.body.recipientUsername;
 
-const sender = await prisma.user.findUnique({ where: { id: senderId } });
-const recipient = await prisma.user.findUnique({ where: { id: recipientId } });
+    const sender = await prisma.user.findUnique({
+      where: { username: senderUsername },
+    });
 
-if (!sender || !recipient) {
-  res.status(400).json({ message: 'Invalid senderId or recipientId' });
-  return;
-}
+    const recipient = await prisma.user.findUnique({
+      where: { username: recipientUsername },
+    });
+    console.log(`Sender: ${sender}`);
+    console.log(`Recipient: ${recipient}`);
 
-const message = await prisma.message.create({
-  data: {
-    messages: req.body.messages,
-    senderId: senderId,
-    recipientId: recipientId,
-  },
-});
 
-res.json(message);
-} catch (err) {
-res.status(500).json({ message: err.message });
-}
+    if (!sender || !recipient) {
+      res.status(400).json({ message: 'Invalid sender or recipient' });
+      return;
+    }
+
+    const message = await prisma.message.create({
+      data: {
+        messages: req.body.messages,
+        sender: { connect: { username: senderUsername } },
+        recipient: { connect: { username: recipientUsername } },
+      },
+    });
+
+    res.json(message);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 exports.getMessages = async (req, res) => {

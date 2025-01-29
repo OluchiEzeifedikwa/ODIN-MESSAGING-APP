@@ -8,6 +8,7 @@ const passportjs = require('./passport');
 const authLogin = require('./auth/routes/loginRouter');
 const authSignup = require('./auth/routes/signupRouter');
 const messageRouter = require('./messagingApp/routes/messageRouter');
+const profileRouter = require('./messagingApp/routes/profileRouter');
 const { cookieJwtAuth } = require('./cookieJWTAuth');
 const addRouter = require('./auth/routes/addRouter')
 const addController = require('./auth/controllers/addController')
@@ -30,14 +31,18 @@ app.use(passport.session());
 app.use(authLogin);
 app.use(authSignup);
 app.use(addRouter);
+app.use(profileRouter);
 app.use(cookieParser());
 app.use(messageRouter);
+app.use("/images", express.static("images"));
+
 
 
 
 app.get('/', (req, res) => {
   res.render('../messagingApp/views/index');
 })
+
 
 app.get('/add', (req, res) => {
   res.render('../auth/views/welcome');

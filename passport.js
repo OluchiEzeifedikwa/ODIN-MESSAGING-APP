@@ -9,11 +9,11 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 passport.use(new LocalStrategy({
-  nameField: 'name',
+  usernameField: 'username',
   passwordField: 'password',
-}, async (name, password, done) => {
+}, async (username, password, done) => {
   try {
-    const user = await prisma.user.findUnique({ where: { name } });
+    const user = await prisma.user.findUnique({ where: { username } });
     if (!user) {
       return done(null, false, { message: 'Incorrect username.' });
     }

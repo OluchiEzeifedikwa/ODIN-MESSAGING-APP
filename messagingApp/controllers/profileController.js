@@ -5,28 +5,70 @@ const prisma = new PrismaClient();
 
 
 // To create a profile
-exports.createProfile = async (req, res) => {
-   try {
+// exports.createProfile = async (req, res) => {
+//    try {
     
-    const { name, username } = req.body;
-    const newProfile = await prisma.profile.create({
+//     const { name, username } = req.body;
+//     const newProfile = await prisma.profile.create({
+//       data: {
+//         name,
+//         username,   
+//        },
+//     });
+
+//     res.redirect('/createProfile');
+//    } catch (err) {
+//      res.status(500).json({ message: 'Failed to create profile' });
+//   }
+// };
+
+
+exports.createProfile = async(req, res) => {
+  try {
+    const { profilename } = req.body;
+    // const files = req.files;
+    const picture = req.file; // Access the uploaded file
+
+    const profile = await prisma.profile.create({
       data: {
-        name,
-        username,   
-       },
+        profilename,
+      },
     });
 
-    res.redirect('/createProfile');
-   } catch (err) {
-     res.status(500).json({ message: 'Failed to create profile' });
-  }
-};
+    // await Promise.all(files.map(async (file) => {
+    await prisma.picture.create({
+      data: {
+        picturename: picture.originalname,
+        profileId: profile.id,
+      },
+    });
+    
+    res.redirect("/pictures");
 
-// To get all comments
-exports.getAllProfiles = async (req, res) => {
+    // res.send({ message: 'Folder created and files uploaded successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.render({ message: "Error creating profile or uploading pictures" });
+  }
+}
+
+// To get all profiles
+exports.getProfiles = async (req, res) => {
   try {
     const profiles = await prisma.profile.findMany();
     res.status(200).json(profiles);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to retrieve profiles' });
+  }
+};
+
+
+// To get all pictures
+exports.getPictures = async (req, res) => {
+  try {
+    const picture = await prisma.picture.findMany();
+    // res.status(200).json(picture);
+    res.render("../messagingApp/views/pictures", {pictures: picture});
   } catch (err) {
     res.status(500).json({ message: 'Failed to retrieve profiles' });
   }
